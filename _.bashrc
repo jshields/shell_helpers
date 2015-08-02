@@ -129,10 +129,22 @@ alias pop="popd"
 # functionality to print a random encouraging statement
 # TODO read from the .joshrc config file
 
-if [ -z $ENCOURAGE ]; then
-	export ENCOURAGE=true
+#if [ -z $ENCOURAGE ]; then
+#	export ENCOURAGE=true
 	# echo "Created the Encourage variable"
-fi
+#fi
+
+function set_encourage(){
+	ENCOURAGE=$1
+	# interpret whatever the user input to true or false
+	if [ $ENCOURAGE ]; then
+		ENCOURAGE=true
+	else
+		ENCOURAGE=false
+	fi
+	echo "Creating ~/.joshrc from setter"
+	echo ENCOURAGE=$ENCOURAGE>>~/.joshrc
+}
 
 function toggle_encouragement(){
 	if $ENCOURAGE; then
@@ -141,8 +153,39 @@ function toggle_encouragement(){
 		ENCOURAGE=true
 	fi
 	echo "Encouragement: "$ENCOURAGE
-	echo ENCOURAGEMENT=$ENCOURAGE>>~/.joshrc
+	set_encourage $ENCOURAGE
 }
+
+function get_encourage(){
+	if [ -a ~/.joshrc ]; then
+		#echo "reading ~/.joshrc"
+		#FIN=$(cat ~/.joshrc)
+		#echo "Fin is: "$FIN
+		#IFS="="
+		#while read -r name value
+		#do
+		#echo "Content of $name is ${value//\"/}"
+		#done < filename
+		
+		#for var in VARIABLE1 VARIABLE2 VARIABLE3; do
+		#    echo "Content of $var is ${!var}"
+		#done
+		. ~/.joshrc
+		echo "File content of ENCOURAGE is $ENCOURAGE"
+	else
+		echo "No .joshrc found. Create ~/.joshrc?"
+
+		read yorn;
+		if test "$yorn" = "y"; then
+		   echo "Creating ~/.joshrc from getter"
+			toggle_encouragement
+			set_encourage true
+		else
+		   echo "Not created.";
+		fi
+	fi
+}
+
 
 function encourage(){
 	NUM=$[ 1 + $[ RANDOM % 10 ]]
@@ -152,7 +195,7 @@ function encourage(){
 	3) PHRASE="You're doing exceptionally well!";;
 	4) PHRASE="Wow, good job!";;
 	5) PHRASE="You're out of this world!";;
-	6) PHRASE="Nobody does it like you!";;
+	6) PHRASE="You're the best!";;
 	7) PHRASE="I appreciate your enthusiasm!";;
 	8) PHRASE="Yeah, it's all you!";;
 	9) PHRASE="Wow, look at you go!";;
