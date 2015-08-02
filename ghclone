@@ -1,0 +1,12 @@
+#!/bin/bash
+# shorthand git clone for github projects
+REPO=$1
+
+# if they specified a destination directory, put the project folder there / with that name
+# when no destination is specified, git already knows to put the folder in the current location
+if [[ $2 ]]; then
+	DEST=$2
+fi
+
+URL="https://github.com/"$REPO".git"
+git clone $URL $DEST
