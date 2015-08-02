@@ -113,11 +113,54 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Josh's stuff
-# add my home bin to the path var, so I can keep my commands in there
+# bash_helpers additions start here (besides enabling color prompt)
+# add home bin to the path var, so commands from there can be run
 export PATH=~/bin/:$PATH
 #/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 
+alias w='cd ~/workspace'
 alias copy='xclip -selection clipboard'
 alias paste='xclip -selection clipboard -o'
 alias reader='paste | espeak'
+alias commandlist='compgen -A function -abck'
+alias push="pushd"
+alias pop="popd"
+
+# functionality to print a random encouraging statement
+# TODO read from the .joshrc config file
+
+if [ -z $ENCOURAGE ]; then
+	export ENCOURAGE=true
+	# echo "Created the Encourage variable"
+fi
+
+function toggle_encouragement(){
+	if $ENCOURAGE; then
+		ENCOURAGE=false
+	else
+		ENCOURAGE=true
+	fi
+	echo "Encouragement: "$ENCOURAGE
+	echo ENCOURAGEMENT=$ENCOURAGE>>~/.joshrc
+}
+
+function encourage(){
+	NUM=$[ 1 + $[ RANDOM % 10 ]]
+	case $NUM in
+	1) PHRASE="You're doing great!";;
+	2) PHRASE="You're doing fantastic!";;
+	3) PHRASE="You're doing exceptionally well!";;
+	4) PHRASE="Wow, good job!";;
+	5) PHRASE="You're out of this world!";;
+	6) PHRASE="Nobody does it like you!";;
+	7) PHRASE="I appreciate your enthusiasm!";;
+	8) PHRASE="Yeah, it's all you!";;
+	9) PHRASE="Wow, look at you go!";;
+	10) PHRASE="Woah, you're on fire but not literally!";;
+	*) Phrase="Woah woah!!!";;
+	esac
+	echo $PHRASE
+}
+if $ENCOURAGE; then
+	encourage
+fi
