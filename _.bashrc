@@ -189,7 +189,7 @@ function get_conf(){
 ENCOURAGE=$(get_conf ENCOURAGE)
 set_conf ENCOURAGE $ENCOURAGE
 
-# print an encouraging message
+# print an encouraging message TODO: load these from a file
 function encourage(){
 	NUM=$[ 1 + $[ RANDOM % 10 ]]
 	case $NUM in
