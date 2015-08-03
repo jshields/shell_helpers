@@ -126,67 +126,70 @@ alias commandlist='compgen -A function -abck'
 alias push="pushd"
 alias pop="popd"
 
-# functionality to print a random encouraging statement
-# TODO read from the .joshrc config file
-
-#if [ -z $ENCOURAGE ]; then
-#	export ENCOURAGE=true
-	# echo "Created the Encourage variable"
-#fi
-
-function set_encourage(){
-	ENCOURAGE=$1
-	# interpret whatever the user input to true or false
-	if [ $ENCOURAGE ]; then
-		ENCOURAGE=true
-	else
-		ENCOURAGE=false
+# TODO implement --quiet
+function feedback(){
+	if [ ! $FEEDBACKMODE ]; then
+		echo "No feedback mode set. Defaulting to TEXT"
+		# set_config FEEDBACKMODE TEXT
+		FEEDBACKMODE="TEXT"
 	fi
-	echo "Creating ~/.joshrc from setter"
-	echo ENCOURAGE=$ENCOURAGE>>~/.joshrc
+	case $FEEDBACKMODE in
+		"TEXT" ) echo $1;;
+		"AUDIBLE" ) espeak $1;;
+		"BOTH" )
+			echo $1
+			espeak $1
+			;;
+		"NONE" ) ;;
+		* ) ;;
+	esac
 }
 
-function toggle_encouragement(){
-	if $ENCOURAGE; then
-		ENCOURAGE=false
-	else
-		ENCOURAGE=true
-	fi
-	echo "Encouragement: "$ENCOURAGE
-	set_encourage $ENCOURAGE
-}
-
-function get_encourage(){
+# light API for getting / setting .joshrc config
+function set_conf(){
+	KEY=$1
+	VALUE=$2
 	if [ -a ~/.joshrc ]; then
-		#echo "reading ~/.joshrc"
-		#FIN=$(cat ~/.joshrc)
-		#echo "Fin is: "$FIN
-		#IFS="="
-		#while read -r name value
-		#do
-		#echo "Content of $name is ${value//\"/}"
-		#done < filename
-		
-		#for var in VARIABLE1 VARIABLE2 VARIABLE3; do
-		#    echo "Content of $var is ${!var}"
-		#done
-		. ~/.joshrc
-		echo "File content of ENCOURAGE is $ENCOURAGE"
+		# if the key is already in the config, overwrite it
+		if grep --quiet $KEY ~/.joshrc; then
+			sed -i -r 's|'$KEY'=.*|'$KEY'='$VALUE'|g' ~/.joshrc
+			#echo $KEY" changed to "$VALUE
+		else
+			echo $KEY" set to "$VALUE
+			echo $KEY=$VALUE>>~/.joshrc
+		fi
 	else
-		echo "No .joshrc found. Create ~/.joshrc?"
+		echo "Creating ~/.joshrc from setter"
+		echo "\n"$KEY=$VALUE>>~/.joshrc
+	fi
+}
 
+function get_conf(){
+	KEY=$1
+	if [ -a ~/.joshrc ]; then
+		. ~/.joshrc
+		RESULT=$(grep $KEY ~/.joshrc)
+		# strip the key from the result to get the value
+		VALUE=$(echo $RESULT | sed -r 's|'$KEY'=|''|g')
+		echo $VALUE
+	else
+		# untested
+		echo "No .joshrc found. Create ~/.joshrc?"
 		read yorn;
 		if test "$yorn" = "y"; then
-		   echo "Creating ~/.joshrc from getter"
-			toggle_encouragement
-			set_encourage true
+			echo "Creating ~/.joshrc from getter"
+			# populating default value
+			set_conf ENCOURAGE ON
 		else
 		   echo "Not created.";
 		fi
 	fi
 }
 
+ENCOURAGE=$(get_conf ENCOURAGE)
+set_conf ENCOURAGE $ENCOURAGE
 
+# print an encouraging message
 function encourage(){
 	NUM=$[ 1 + $[ RANDOM % 10 ]]
 	case $NUM in
@@ -204,6 +207,14 @@ function encourage(){
 	esac
 	echo $PHRASE
 }
-if $ENCOURAGE; then
+
+if [ "$ENCOURAGE" == "ON" ]; then
 	encourage
 fi
+
+# if you're in a git repo, warn when standard rm and mv are used over git rm and git mv
+# TODO
+# echo "Did you mean git rm?"
+# read yorn;
+# if test "$yorn" = "y"; then
+	# git rm $1
