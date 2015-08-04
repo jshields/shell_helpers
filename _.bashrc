@@ -212,6 +212,13 @@ if [ "$ENCOURAGE" == "ON" ]; then
 	encourage
 fi
 
+alias g="get_conf"
+alias s="set_conf"
+
+function draw(){
+	cat ~/ascii/animals/$1.txt
+}
+
 # if you're in a git repo, warn when standard rm and mv are used over git rm and git mv
 # TODO
 # echo "Did you mean git rm?"
