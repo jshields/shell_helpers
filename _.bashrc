@@ -5,7 +5,7 @@ export PATH=~/bin/:$PATH
 
 alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
-alias reader='paste | espeak'
+alias reader='xpaste | espeak'
 alias commandlist='compgen -A function -abck'
 
 # TODO implement --quiet
