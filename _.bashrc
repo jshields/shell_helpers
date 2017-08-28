@@ -8,6 +8,9 @@ alias xpaste='xclip -selection clipboard -o'
 alias reader='xpaste | espeak'
 alias commandlist='compgen -A function -abck'
 
+alias countdirshere='ls -l . | grep -c ^d'
+alias countfileshere='ls -al | grep ^[-] | wc -l'
+
 # TODO implement --quiet
 function feedback(){
 	if [ ! $FEEDBACKMODE ]; then
