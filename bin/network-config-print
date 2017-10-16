@@ -1,0 +1,19 @@
+#!/bin/bash
+
+printf "\n/etc/hosts\n"
+cat /etc/hosts
+
+printf "\n/etc/resolv.conf\n"
+cat /etc/resolv.conf
+
+printf "\n/etc/resolvconf/resolv.conf.d/base\n"
+cat /etc/resolvconf/resolv.conf.d/base
+
+printf "\n/run/resolvconf/resolv.conf\n"
+cat /run/resolvconf/resolv.conf
+
+printf "\n/etc/network/interfaces\n"
+cat /etc/network/interfaces
+
+printf "\n/etc/dhcp/dhclient.conf\n"
+cat /etc/dhcp/dhclient.conf

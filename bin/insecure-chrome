@@ -1,0 +1,2 @@
+google-chrome --disable-web-security --disable-xss-auditor --user-data-dir=~/chrome_data_dir
+# --proxy-pac-url="http://"

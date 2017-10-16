@@ -1,7 +1,6 @@
-# bash_helpers additions
-# add home bin to the path var, so commands from there can be run
-export PATH=~/bin/:$PATH
-#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+export EDITOR='/usr/bin/vim'
+export GOPATH=$HOME/workspace/go
+export PATH=~/bin/:$GOPATH/bin:$PATH
 
 alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
@@ -11,27 +10,26 @@ alias commandlist='compgen -A function -abck'
 alias countdirshere='ls -l . | grep -c ^d'
 alias countfileshere='ls -al | grep ^[-] | wc -l'
 
-# TODO implement --quiet
-function feedback(){
-	if [ ! $FEEDBACKMODE ]; then
-		echo "No feedback mode set. Defaulting to TEXT"
-		# set_config FEEDBACKMODE TEXT
-		FEEDBACKMODE="TEXT"
-	fi
-	case $FEEDBACKMODE in
-		"TEXT" ) echo $1;;
-		"AUDIBLE" ) espeak $1;;
-		"BOTH" )
-			echo $1
-			espeak $1
-			;;
-		"NONE" ) ;;
-		* ) ;;
-	esac
+alias time_since_login='who -b'
+
+function dinosaur_day() {
+    date +%A | awk '{print toupper($0)}' | cowthink -f stegosaurus | lolcat
 }
 
-# getting / setting .joshrc config
+# back up n directories
+function cd_up() {
+    cd $(printf "%0.s../" $(seq 1 $1 ))
+}
+alias 'cd..n'='cd_up'
 
+# ~/working/dir(git_branch_name)$ as prompt:
+source /etc/bash_completion.d/git-prompt
+PS1='\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)")\$ '
+# include working dir as terminal title:
+PS1="\[\e]2;\w\a\]$PS1"
+
+
+# getting / setting .joshrc config
 #function create_joshrc_prompt(){
 #    echo "No .joshrc found. Create ~/.joshrc? y/n"
 #    read yorn
@@ -86,8 +84,8 @@ function encourage(){
     7) PHRASE="I appreciate your enthusiasm!";;
     8) PHRASE="Yeah, it's all you!";;
     9) PHRASE="Wow, look at you go!";;
-    10) PHRASE="Woah, you're on fire!";;
-    *) PHRASE="Woah woah!!!";;
+    10) PHRASE="Whoa, you're on fire!";;
+    *) PHRASE="Wowee!!!";;
     esac
     echo $PHRASE
 }
