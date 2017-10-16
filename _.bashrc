@@ -24,7 +24,7 @@ alias 'cd..n'='cd_up'
 
 # ~/working/dir(git_branch_name)$ as prompt:
 source /etc/bash_completion.d/git-prompt
-PS1='\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)")\$ '
+PS1='\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)"): '
 # include working dir as terminal title:
 PS1="\[\e]2;\w\a\]$PS1"
 
