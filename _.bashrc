@@ -7,10 +7,11 @@ alias xpaste='xclip -selection clipboard -o'
 alias reader='xpaste | espeak'
 alias commandlist='compgen -A function -abck'
 
-alias countdirshere='ls -l . | grep -c ^d'
-alias countfileshere='ls -al | grep ^[-] | wc -l'
+alias 'count-dirs-here'='ls -l . | grep -c ^d'
+alias 'count-files-here'='ls -al | grep ^[-] | wc -l'
 
-alias time_since_login='who -b'
+alias 'time-since-login'='who -b'
+
 
 function dinosaur_day() {
     date +%A | awk '{print toupper($0)}' | cowthink -f stegosaurus | lolcat
@@ -21,6 +22,7 @@ function cd_up() {
     cd $(printf "%0.s../" $(seq 1 $1 ))
 }
 alias 'cd..n'='cd_up'
+alias 'git-fancy-history'='git log --graph --decorate --pretty=oneline --abbrev-commit --all'
 
 # ~/working/dir(git_branch_name)$ as prompt:
 source /etc/bash_completion.d/git-prompt
