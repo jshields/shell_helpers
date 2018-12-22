@@ -26,6 +26,7 @@ function cd_up() {
 }
 alias 'cd..n'='cd_up'
 alias 'git-fancy-history'='git log --graph --decorate --pretty=oneline --abbrev-commit --all'
+alias 'git-show-files'='git show --pretty="" --name-status'
 
 # ~/working/dir(git_branch_name)$ as prompt:
 source /etc/bash_completion.d/git-prompt
