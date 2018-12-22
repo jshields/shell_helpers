@@ -2,6 +2,9 @@ export EDITOR='/usr/bin/vim'
 export GOPATH=$HOME/workspace/go
 export PATH=~/bin/:$GOPATH/bin:$PATH
 
+alias science='export PATH=/home/josh/anaconda3/bin:$PATH && source activate science'
+alias unscience='source deactivate science && unset PATH && export PATH=~/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
 alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
 alias reader='xpaste | espeak'
@@ -29,6 +32,10 @@ source /etc/bash_completion.d/git-prompt
 PS1='\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)"): '
 # include working dir as terminal title:
 PS1="\[\e]2;\w\a\]$PS1"
+
+# for Google Cloud if installed
+#source /home/josh/google-cloud-sdk/completion.bash.inc
+#source /home/josh/google-cloud-sdk/path.bash.inc
 
 
 # getting / setting .joshrc config
@@ -98,4 +105,10 @@ fi
 
 function draw(){
     cat ~/ascii/$1.txt
+}
+
+# function that takes LeetCode title and converts to file name
+# "709. To Lower Case" -> 709_to_lower_case.py
+function leetcodefile() {
+    touch $(echo $1 | sed -e 's/ /_/g' | sed -e 's/\.//g' | awk '{print tolower($0)}')".py"
 }
