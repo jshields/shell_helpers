@@ -1,2 +1,3 @@
+# for security testing, obviously don't use this for any real web browsing
 google-chrome --disable-web-security --disable-xss-auditor --user-data-dir=~/chrome_data_dir
 # --proxy-pac-url="http://"
