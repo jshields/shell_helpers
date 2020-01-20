@@ -109,7 +109,7 @@ function draw(){
 }
 
 # function that takes LeetCode title and converts to file name
-# "709. To Lower Case" -> 709_to_lower_case.py
+# leetcodefile "709. To Lower Case" .py -> 709_to_lower_case.py
 function leetcodefile() {
-    touch $(echo $1 | sed -e 's/ /_/g' | sed -e 's/\.//g' | awk '{print tolower($0)}')".py"
+    touch $(echo $1 | sed -e 's/ /_/g' | sed -e 's/\.//g' | sed -e "s/'//g" | awk '{print tolower($0)}')$2
 }
