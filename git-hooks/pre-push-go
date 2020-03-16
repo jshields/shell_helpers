@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# This hook is called with the following parameters:
+#
+# $1 -- Name of the remote to which the push is being done
+# $2 -- URL to which the push is being done
+#
+# If pushing without using a named remote those arguments will be equal.
+#
+# Information about the commits which are being pushed is supplied as lines to
+# the standard input in the form:
+#
+#   <local ref> <local sha1> <remote ref> <remote sha1>
+#
+
+# To install, copy into your repo's .git/hooks/ directory
+# Check for gofmt unclean files by listing files differing from gofmt results
+gofmt=`gofmt -l .`
+if [ -n "$gofmt" ]; then
+	echo >&2 "gofmt found unclean files, not pushing"
+	exit 1
+fi
+
+golint=`golint ./...`
+if [ -n "$golint" ]; then
+  echo >&2 "golint found unclean files, not pushing"
+  exit 1
+fi
+
+govet=`go vet ./...`
+if [ -n "$govet" ]; then
+  echo >&2 "govet found unclean files, not pushing"
+  exit 1
+fi
+
+exit 0

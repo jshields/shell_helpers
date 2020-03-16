@@ -1,0 +1,15 @@
+# Mac settings
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  Preferredauthentications publickey
+  IdentityFile ~/.ssh/id_rsa
+
+# public GitHub
+Host github.com
+  Preferredauthentications publickey
+  IdentityFile ~/.ssh/id_rsa_github
+
+Host gitlab.com
+  Preferredauthentications publickey
+  IdentityFile ~/.ssh/id_ed25519_gitlab
