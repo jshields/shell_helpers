@@ -11,14 +11,12 @@ but everything should be cross compatible (?)
 ```
 ln -s ~/workspace/bash_helpers/_.bashrc ~/.bashrc
 ln -s ~/workspace/bash_helpers/_.bash_profile ~/.bash_profile
-
 ```
 
 ## Other setup steps
 
 VS Code `code` command setup:
 https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line
-
 
 Git Aliases:
 https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases
