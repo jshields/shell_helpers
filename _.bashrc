@@ -48,10 +48,11 @@ PS1="\[\e]2;\w\a\]$PS1"
 #source /home/josh/google-cloud-sdk/completion.bash.inc
 #source /home/josh/google-cloud-sdk/path.bash.inc
 
-# function that takes LeetCode title and converts to file name
+# Function that takes LeetCode title and file extension as args, creates file with cleaned filename.
+# Discard parentheses, period, single quote.
 # leetcodefile "709. To Lower Case" .py -> 709_to_lower_case.py
 function leetcodefile() {
-    touch $(echo $1 | sed -e 's/ /_/g' | sed -e 's/\.//g' | sed -e "s/'//g" | awk '{print tolower($0)}')$2
+    touch $(echo $1 | sed -e 's/ /_/g' | sed -e "s/[\(\)\.']//g" | awk '{print tolower($0)}')$2
 }
 
 function open_files_subl () {
@@ -85,3 +86,9 @@ alias ls='ls -lGH'
 
 # if more overrides are needed
 #source ~/.joshrc
+
+# Windows
+# set VS Code as git editor:
+# git config --global core.editor "code --wait"
+# Convenience for WSL:
+#export WINHOME=/mnt/c/Users/Josh
