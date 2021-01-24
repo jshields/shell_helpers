@@ -2,8 +2,7 @@
 
 Utilities for Bash, e.g. commands and aliases I like to use or have written
 
-Some of this is specific to Mac now to accomodate work laptops as opposed to VMs,
-but everything should be cross compatible (?)
+May need to comment / uncomment platform specific config, i.e. for MacOS.
 
 
 ## Setup:
@@ -23,3 +22,6 @@ https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases
 
 Install `ag`:
 https://github.com/ggreer/the_silver_searcher
+
+SSH:
+`cp _sshconfig ~/.ssh/config`, make changes as needed based on what keys are present on the machine
