@@ -2,9 +2,6 @@ export EDITOR='/usr/bin/vim'
 export GOPATH=$HOME/workspace/go
 export PATH=~/bin/:$GOPATH/bin:$PATH
 
-alias science='export PATH=/home/josh/anaconda3/bin:$PATH && source activate science'
-alias unscience='source deactivate science && unset PATH && export PATH=~/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-
 alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
 alias reader='xpaste | espeak'
@@ -13,10 +10,18 @@ alias commandlist='compgen -A function -abck'
 alias 'count-dirs-here'='ls -l . | grep -c ^d'
 alias 'count-files-here'='ls -al | grep ^[-] | wc -l'
 
+function find_file() {
+  find . -iname '$1'
+}
+
 alias 'time-since-login'='who -b'
 
 alias 'git-fancy-history'='git log --graph --decorate --pretty=oneline --abbrev-commit --all'
 alias 'git-show-files'='git show --pretty="" --name-status'
+
+# rebase:
+# git fetch origin
+# git rebase -i origin/dev
 
 # back up n directories
 function cd_up() {
@@ -33,12 +38,21 @@ function draw(){
 }
 
 # Git completions for access to __git_ps1, needed for prompt
+
+
+# Homebrew completions with bash-completion
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+
+
 if [ -f $(brew --prefix)/etc/bash_completion.d/git-prompt.sh ]; then
     # Mac Homebrew
     source $(brew --prefix)/etc/bash_completion.d/git-prompt.sh
 else
     source /etc/bash_completion/git-prompt
 fi
+
+
+
 # ~/working/dir(git_branch_name)$ as prompt:
 PS1='\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)"): '
 # include working dir as terminal title:
@@ -82,6 +96,12 @@ function kill-port () {
 # colored directories / symlinks on OSX
 export LSCOLORS="EHfxcxdxBxegecabagacad"
 alias ls='ls -lGH'
+# using bash not zsh
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
+source ~/.numerator_profile.sh
 
 # if more overrides are needed
 #source ~/.joshrc
+
+complete -C /usr/local/bin/terraform terraform

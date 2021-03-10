@@ -10,7 +10,13 @@ but everything should be cross compatible (?)
 
 ```
 ln -s ~/workspace/bash_helpers/_.bashrc ~/.bashrc
+```
+
+Mac OS X
+```
 ln -s ~/workspace/bash_helpers/_.bash_profile ~/.bash_profile
+
+ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl ~/bin/subl
 ```
 
 ## Other setup steps
