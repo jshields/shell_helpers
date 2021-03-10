@@ -1,6 +1,8 @@
 # ~/.ssh/config
-# Mac settings
+# Mac settings:
+# https://developer.apple.com/library/archive/technotes/tn2449/_index.html
 Host *
+  IgnoreUnknown AddKeysToAgent,UseKeychain
   AddKeysToAgent yes
   UseKeychain yes
   Preferredauthentications publickey
