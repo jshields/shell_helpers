@@ -1,6 +1,6 @@
 export EDITOR='/usr/bin/vim'
 export GOPATH=$HOME/workspace/go
-export PATH=~/bin/:$GOPATH/bin:$PATH
+export PATH=~/bin:$GOPATH/bin:$PATH
 
 alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
@@ -23,6 +23,8 @@ alias 'git-show-files'='git show --pretty="" --name-status'
 # git fetch origin
 # git rebase -i origin/dev
 
+alias 'gh myprs'='gh pr list --author "@me"'
+
 # back up n directories
 function cd_up() {
     cd $(printf "%0.s../" $(seq 1 $1 ))
@@ -38,11 +40,8 @@ function draw(){
 }
 
 # Git completions for access to __git_ps1, needed for prompt
-
-
 # Homebrew completions with bash-completion
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
-
 
 if [ -f $(brew --prefix)/etc/bash_completion.d/git-prompt.sh ]; then
     # Mac Homebrew
@@ -51,9 +50,7 @@ else
     source /etc/bash_completion/git-prompt
 fi
 
-
-
-# ~/working/dir(git_branch_name)$ as prompt:
+# "~/working/dir(git_branch_name): " as prompt:
 PS1='\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)"): '
 # include working dir as terminal title:
 PS1="\[\e]2;\w\a\]$PS1"
@@ -100,6 +97,18 @@ alias ls='ls -lGH'
 # using bash not zsh
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+
+# GNU Grep for Mac
+# ~: which grep
+# /usr/bin/grep
+# ~: brew install grep
+# ==> grep
+# All commands have been installed with the prefix "g".
+# If you need to use these commands with their normal names, you
+# can add a "gnubin" directory to your PATH from your bashrc like:
+# PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
+
+
 # if more overrides are needed
 #source ~/.joshrc
 
@@ -114,3 +123,8 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # work profile (do not store in version control)
 source ~/.numerator_profile.sh
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
