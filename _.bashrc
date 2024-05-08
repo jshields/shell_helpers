@@ -23,7 +23,7 @@ alias 'git-show-files'='git show --pretty="" --name-status'
 # git fetch origin
 # git rebase -i origin/dev
 
-alias 'gh myprs'='gh pr list --author "@me"'
+alias 'gh-myprs'='gh pr list --author "@me"'
 
 # back up n directories
 function cd_up() {
