@@ -1,6 +1,11 @@
-export EDITOR='/usr/bin/vim'
+export EDITOR='/usr/bin/vim' # /usr/local/bin/code
+
 export GOPATH=$HOME/workspace/go
-export PATH=~/bin:$GOPATH/bin:$PATH
+export PYENV_ROOT="$HOME/.pyenv"
+
+export PATH=~/bin:$PYENV_ROOT/bin:/opt/homebrew/bin:$GOPATH/bin:$PATH
+
+eval "$(pyenv init -)"
 
 alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
@@ -41,7 +46,10 @@ function draw(){
 
 # Git completions for access to __git_ps1, needed for prompt
 # Homebrew completions with bash-completion
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+# Intel
+# [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+# Apple Silicon
+[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
 
 if [ -f $(brew --prefix)/etc/bash_completion.d/git-prompt.sh ]; then
     # Mac Homebrew
