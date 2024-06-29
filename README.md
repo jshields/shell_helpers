@@ -1,8 +1,10 @@
-# bash_helpers
+# Shell helpers
 
 Utilities for Bash, e.g. commands and aliases I like to use or have written
 
 May need to comment / uncomment platform specific config, i.e. for MacOS.
+
+Other (old) configs saved as gists need to be consolidated and updated: https://gist.github.com/jshields
 
 
 ## Setup:
