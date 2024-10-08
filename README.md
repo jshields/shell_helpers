@@ -8,14 +8,16 @@ Other (old) configs saved as gists need to be consolidated and updated: https://
 
 
 ## Setup:
-
+Assuming repo is cloned at `~/workspace/jshields`.
+(Depending on which shell is used, setup the config where it can be sourced by default)
 ```
-ln -s ~/workspace/bash_helpers/_.bashrc ~/.bashrc
+ln -s ~/workspace/jshields/shell_helpers/_.bashrc ~/.bashrc
+ln -s ~/workspace/jshields/shell_helpers/_.zshrc ~/.zshrc
 ```
 
 Mac OS X
 ```
-ln -s ~/workspace/bash_helpers/_.bash_profile ~/.bash_profile
+ln -s ~/workspace/jshields/shell_helpers/_.bash_profile ~/.bash_profile
 
 ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl ~/bin/subl
 ```
