@@ -59,7 +59,8 @@ else
 fi
 
 # "~/working/dir(git_branch_name): " as prompt:
-PS1='\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)"): '
+# Escape, then 01;33m is bold yellow, 00m is reset
+PS1='\[\033[01;33m\]\w\[\033[00m\]$(__git_ps1 "(%s)"): '
 # include working dir as terminal title:
 PS1="\[\e]2;\w\a\]$PS1"
 
