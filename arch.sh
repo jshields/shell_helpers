@@ -1,4 +1,6 @@
 # https://wiki.archlinux.org/title/Installation_guide
+# this is intended as a cheat sheet for one specific install / setup of Arch Linux
+# should not be run as a script
 
 cat /sys/firmware/efi/fw_platform_size
 # should return 64
@@ -9,7 +11,7 @@ ping archlinux.org
 
 timedatectl
 
-# Before reformatting, just unplug SSD and HDD that won't be used for this.
+# Before booting from USB, just unplug SSD and HDD that won't be used for this install.
 
 # Partitioning scheme:
 # 1 GB EFI partition type, mounted as /boot, FAT32 file system (disk does not already have an EFI partition)
@@ -65,6 +67,11 @@ mkfs.fat -F 32 /dev/efi_system_partition
 mount /dev/root_partition /mnt
 mount --mkdir /dev/efi_system_partition /mnt/boot
 
+# verify the SSD looks right
+fdisk -l
+lsblk
+parted -l
+
 # Probably don't need swap partition with 32GB RAM, and swap file would be fine if needed.
 # https://wiki.archlinux.org/title/Swap#Swap_file
 # zram memory compression can also be used as swap space
@@ -81,10 +88,23 @@ pacstrap -K /mnt base linux linux-firmware
 # Step 3
 genfstab -U /mnt >> /mnt/etc/fstab
 
+# list timezones outside chroot to make sure the name is right
+timedatectl list-timezones
+
 # change root into the new system
 arch-chroot /mnt
 
-# set time, localization per wiki
+# set time
+# set the timezone that seems right
+# can't use timedatectl right now
+# timedatectl set-timezone America/Chicago
+ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
+hwclock --systohc
+
+# Edit /etc/locale.gen and uncomment en_US.UTF-8 UTF-8
+# Then:
+locale-gen
+echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
 # network config
 echo "josh-pc" >> /etc/hostname
@@ -130,7 +150,7 @@ pacman install intel-ucode nvidia-dkms dkms
 # desktop
 # https://github.com/archlinux/archinstall/blob/master/archinstall/default_profiles/desktops/plasma.py
 # Xorg as a backup in case Wayland session has issues
-pacman install  xorg-server xdg-utils plasma-meta plasma-workspace konsole kate dolphin ark
+pacman install xorg-server xdg-utils plasma-meta plasma-workspace konsole kate dolphin ark
 
 # gaming
 pacman install steam gamescope lutris
