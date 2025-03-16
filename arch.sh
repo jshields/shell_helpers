@@ -1,5 +1,14 @@
 # https://wiki.archlinux.org/title/Installation_guide
 
+cat /sys/firmware/efi/fw_platform_size
+# should return 64
+
+# ensure Internet connection (needed for installing packages during initial setup)
+ip link
+ping archlinux.org
+
+timedatectl
+
 # Before reformatting, just unplug SSD and HDD that won't be used for this.
 
 # Partitioning scheme:
@@ -9,9 +18,11 @@
 # partition the SSD
 # Identify the disk (replace /dev/sda with your disk)
 fdisk -l
+lsblk
 
 # Start fdisk
 # fdisk /dev/the_disk_to_be_partitioned
+# 2TB SSD
 fdisk /dev/sda
 
 # Create EFI partition
@@ -51,13 +62,17 @@ lsblk
 mkfs.ext4 /dev/root_partition
 mkfs.fat -F 32 /dev/efi_system_partition
 
+mount /dev/root_partition /mnt
+mount --mkdir /dev/efi_system_partition /mnt/boot
+
 # Probably don't need swap partition with 32GB RAM, and swap file would be fine if needed.
 # https://wiki.archlinux.org/title/Swap#Swap_file
 # zram memory compression can also be used as swap space
 # https://wiki.archlinux.org/title/Zram#Usage_as_swap
 
 # Step 2.1
-# check /etc/pacman.d/mirrorlist
+# check mirrors
+cat /etc/pacman.d/mirrorlist
 
 # Step 2.2
 # install base packages in live session from boot media, using pacstrap for new system installation:
