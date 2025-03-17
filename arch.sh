@@ -96,7 +96,7 @@ arch-chroot /mnt
 
 # set time
 # set the timezone that seems right
-# can't use timedatectl right now
+# can't use timedatectl from chroot, but the command would normally be:
 # timedatectl set-timezone America/Chicago
 ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
 hwclock --systohc
@@ -147,10 +147,21 @@ pacman install fsck e2fsprogs
 # Intel and Nvidia
 pacman install intel-ucode nvidia-dkms dkms
 
-# desktop
+# desktop (includes i.e. network manager in dependency tree for managing networks via desktop as well)
 # https://github.com/archlinux/archinstall/blob/master/archinstall/default_profiles/desktops/plasma.py
-# Xorg as a backup in case Wayland session has issues
-pacman install xorg-server xdg-utils plasma-meta plasma-workspace konsole kate dolphin ark
+# https://wiki.archlinux.org/title/KDE#Installation
+# may need Xorg as a backup in case Wayland session has issues
+# xorg-server xdg-utils 
+# see kde-applications-meta for other basic desktop programs
+pacman install plasma-meta kde-utilities-meta kde-system-meta
 
 # gaming
 pacman install steam gamescope lutris
+
+# Enable the kernel option for the Nvidia proprietary drivers
+sudo nano /etc/default/grub
+# nvidia_drm.modeset=1
+# GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nvidia-drm.modeset=1 nvidia-drm.fbdev=1"
+
+# cat /proc/driver/nvidia/params | sort
+# NVreg_PreserveVideoMemoryAllocations=1
