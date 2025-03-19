@@ -31,9 +31,9 @@ fdisk /dev/sda
 # new
 n
 # Enter to leave as default partition number 1
-<Enter>
+# <Enter>
 # Enter again - default first sector
-<Enter>
+# <Enter>
 # Desired size. 1000MB
 +1000M
 # change type
@@ -47,11 +47,11 @@ t
 # new
 n
 # default partition number 1
-<Enter>
+# <Enter>
 # (default first sector)
-<Enter>
+# <Enter>
 # (use remaining space)
-<Enter>
+# <Enter>
 # write
 w
 
@@ -83,7 +83,7 @@ cat /etc/pacman.d/mirrorlist
 
 # Step 2.2
 # install base packages in live session from boot media, using pacstrap for new system installation:
-pacstrap -K /mnt base linux linux-firmware
+pacstrap -K /mnt base linux-lts linux-firmware
 
 # Step 3
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -159,7 +159,7 @@ pacman install plasma-meta kde-utilities-meta kde-system-meta
 pacman install steam gamescope lutris
 
 # Enable the kernel option for the Nvidia proprietary drivers
-sudo nano /etc/default/grub
+nano /etc/default/grub
 # nvidia_drm.modeset=1
 # GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nvidia-drm.modeset=1 nvidia-drm.fbdev=1"
 
