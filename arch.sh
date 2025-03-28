@@ -83,7 +83,8 @@ cat /etc/pacman.d/mirrorlist
 
 # Step 2.2
 # install base packages in live session from boot media, using pacstrap for new system installation:
-pacstrap -K /mnt base linux-lts linux-firmware
+pacstrap -K /mnt base linux linux-firmware
+# If too unstable, use linux-lts kernel package. Linux kernel 6.14 includes gaming performance improvements and device drivers.
 
 # Step 3
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -147,21 +148,47 @@ pacman install fsck e2fsprogs
 # Intel and Nvidia
 pacman install intel-ucode nvidia-dkms dkms
 
-# desktop (includes i.e. network manager in dependency tree for managing networks via desktop as well)
+# Plasma desktop ( withKWin Wayland compositor).
+# Packages in this group / dependency tree include i.e. network manager for managing networks via desktop as well.
 # https://github.com/archlinux/archinstall/blob/master/archinstall/default_profiles/desktops/plasma.py
 # https://wiki.archlinux.org/title/KDE#Installation
-# may need Xorg as a backup in case Wayland session has issues
-# xorg-server xdg-utils 
 # see kde-applications-meta for other basic desktop programs
 pacman install plasma-meta kde-utilities-meta kde-system-meta
 
-# gaming
-pacman install steam gamescope lutris
+# gaming applications
+pacman install steam gamescope lutris discord
 
-# Enable the kernel option for the Nvidia proprietary drivers
+# Installing and running Discord as a flatpak may improve performance.
+# https://wiki.archlinux.org/title/Discord
+# pacman install flatpak
+# flatpak install discord
+
+# Enable the kernel options for the Nvidia proprietary drivers.
+# Without these set, Wayland login to Plasma desktop will result in a black screen.
 nano /etc/default/grub
 # nvidia_drm.modeset=1
-# GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nvidia-drm.modeset=1 nvidia-drm.fbdev=1"
+# nvidia-drm.fbdev=1
+GRUB_CMDLINE_LINUX_DEFAULT="nvidia-drm.modeset=1 nvidia-drm.fbdev=1"
+# grub config must be regenerated after making changes
+grub-mkconfig -o /boot/grub/grub.cfg
+# Once things are stable, adding `quiet splash` here will give a splash screen during boot instead of log messages.
+# Verify nvidia kernel parameters are set - should return "Y".
+# Reboot will be needed since grub needs to pass in the parameter on boot.
+cat /sys/module/nvidia_drm/parameters/modeset
+cat /sys/module/nvidia_drm/parameters/fbdev
 
-# cat /proc/driver/nvidia/params | sort
+cat /proc/driver/nvidia/params | sort
 # NVreg_PreserveVideoMemoryAllocations=1
+
+# Add this line to KWin config
+# https://blog.davidedmundson.co.uk/blog/running-kwin-wayland-on-nvidia/
+nano /etc/profile.d/kwin.sh
+export KWIN_DRM_USE_EGL_STREAMS=1
+
+# Select "Plasma (wayland)" from your login manager.
+# Wayland is needed for gamescope.
+# Trying to mirror SteamOS' setup as much as possible while maintaining a standalone OS/desktop.
+
+# If the system frequently breaks and requires reinstall, consider btrfs filesystem which supports easier snapshots,
+# or install with LVM for managing ext4 filesystem.
+
