@@ -12,7 +12,7 @@ setopt PROMPT_SUBST
 # PROMPT='%F{green}%*%f %F{blue}%~%f %F{red}${vcs_info_msg_0_}%f$ '
 # 215 = pale orange color
 # https://en.wikipedia.org/wiki/ANSI_escape_code
-PROMPT='%F{yellow}%~%f%F{215}${vcs_info_msg_0_}%f%F{yellow}:%f '
+PROMPT='%F{yellow}%~%f%F{215}${vcs_info_msg_0_}%f%F{yellow}🥭〉%f '
 
 
 # Homebrew
