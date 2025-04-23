@@ -3,7 +3,7 @@ export EDITOR='/usr/bin/vim' # /usr/local/bin/code
 export GOPATH=$HOME/workspace/go
 export PYENV_ROOT="$HOME/.pyenv"
 
-export PATH=~/bin:$PYENV_ROOT/bin:/opt/homebrew/bin:$GOPATH/bin:$PATH
+export PATH=~/bin:~/.local/bin:$PYENV_ROOT/bin:/opt/homebrew/bin:$GOPATH/bin:$PATH
 
 eval "$(pyenv init -)"
 
@@ -11,6 +11,8 @@ alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
 alias reader='xpaste | espeak'
 alias commandlist='compgen -A function -abck'
+
+alias tf='terraform'
 
 alias 'count-dirs-here'='ls -l . | grep -c ^d'
 alias 'count-files-here'='ls -al | grep ^[-] | wc -l'
@@ -44,23 +46,9 @@ function draw(){
     cat ~/ascii/$1.txt
 }
 
-# Git completions for access to __git_ps1, needed for prompt
-# Homebrew completions with bash-completion
-# Intel
-# [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
-# Apple Silicon
-[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
-
-if [ -f $(brew --prefix)/etc/bash_completion.d/git-prompt.sh ]; then
-    # Mac Homebrew
-    source $(brew --prefix)/etc/bash_completion.d/git-prompt.sh
-else
-    source /etc/bash_completion/git-prompt
-fi
-
 # "~/working/dir(git_branch_name): " as prompt:
 # Escape, then 01;33m is bold yellow, 00m is reset
-PS1='\[\033[01;33m\]\w\[\033[00m\]$(__git_ps1 "(%s)"): '
+PS1='\[\033[01;33m\]\w\[\033[00m\]$(__git_ps1 "(%s)")🥭〉'
 # include working dir as terminal title:
 PS1="\[\e]2;\w\a\]$PS1"
 
@@ -100,11 +88,27 @@ function kill-port () {
 }
 
 # Mac
+# Git completions for access to __git_ps1, needed for prompt
+# Homebrew completions with bash-completion
+# Intel
+# [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+# Apple Silicon
+[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+
+if [ -f $(brew --prefix)/etc/bash_completion.d/git-prompt.sh ]; then
+    # Mac Homebrew
+    source $(brew --prefix)/etc/bash_completion.d/git-prompt.sh
+else
+    source /etc/bash_completion/git-prompt
+fi
+
 # colored directories / symlinks on OSX
 export LSCOLORS="EHfxcxdxBxegecabagacad"
 alias ls='ls -lGH'
 # using bash not zsh
 export BASH_SILENCE_DEPRECATION_WARNING=1
+
+. "$HOME/.local/bin/env"
 
 
 # GNU Grep for Mac
