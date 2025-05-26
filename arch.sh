@@ -84,7 +84,7 @@ cat /etc/pacman.d/mirrorlist
 # Step 2.2
 # install base packages in live session from boot media, using pacstrap for new system installation:
 pacstrap -K /mnt base linux linux-firmware
-# If too unstable, use linux-lts kernel package. Linux kernel 6.14 includes gaming performance improvements and device drivers.
+# If too unstable, use linux-lts kernel package. But, Linux kernel 6.14 includes gaming performance improvements and device drivers.
 
 # Step 3
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -134,19 +134,28 @@ reboot
 
 # install more packages
 # general
-pacman install man-db which less wget htop openssh nano
+pacman install man-db man-pages texinfo which less wget htop nano
 
 # file system packages
 pacman install fsck e2fsprogs
 
-# TODO
-# Audio setup:
+# kernel audio drivers should be fine.
+# TODO: check which devices are supported.
+# newest kernel includes drivers for some SteelSeries headsets.
 # https://github.com/archlinux/archinstall/blob/87fb96d249f5660f5dc2095d33dc078028705fdf/archinstall/lib/models/audio_configuration.py
 # https://github.com/archlinux/archinstall/blob/master/archinstall/default_profiles/applications/pipewire.py#L16-L25
-# sof-firmware
+# May want pipewire ?
 
-# Intel and Nvidia
-pacman install intel-ucode nvidia-dkms dkms
+# Intel
+pacman install intel-ucode
+
+# AMD
+# amdgpu driver comes with Linux kernel, and should load automatically on boot.
+# vulkan-radeon is part of mesa, installing separately is not necessary
+# https://github.com/archlinux/archinstall/blob/6c7260fa336909c7a9775dcf2f3cb78027e7af3c/archinstall/lib/hardware.py#L102-L109
+pacman install mesa
+# If having trouble with Wayland, install packages needed for xorg: xf86-video-amdgpu, xf86-video-ati ?
+
 
 # Plasma desktop ( withKWin Wayland compositor).
 # Packages in this group / dependency tree include i.e. network manager for managing networks via desktop as well.
@@ -163,27 +172,7 @@ pacman install steam gamescope lutris discord
 # pacman install flatpak
 # flatpak install discord
 
-# Enable the kernel options for the Nvidia proprietary drivers.
-# Without these set, Wayland login to Plasma desktop will result in a black screen.
-nano /etc/default/grub
-# nvidia_drm.modeset=1
-# nvidia-drm.fbdev=1
-GRUB_CMDLINE_LINUX_DEFAULT="nvidia-drm.modeset=1 nvidia-drm.fbdev=1"
-# grub config must be regenerated after making changes
-grub-mkconfig -o /boot/grub/grub.cfg
-# Once things are stable, adding `quiet splash` here will give a splash screen during boot instead of log messages.
-# Verify nvidia kernel parameters are set - should return "Y".
-# Reboot will be needed since grub needs to pass in the parameter on boot.
-cat /sys/module/nvidia_drm/parameters/modeset
-cat /sys/module/nvidia_drm/parameters/fbdev
 
-cat /proc/driver/nvidia/params | sort
-# NVreg_PreserveVideoMemoryAllocations=1
-
-# Add this line to KWin config
-# https://blog.davidedmundson.co.uk/blog/running-kwin-wayland-on-nvidia/
-nano /etc/profile.d/kwin.sh
-export KWIN_DRM_USE_EGL_STREAMS=1
 
 # Select "Plasma (wayland)" from your login manager.
 # Wayland is needed for gamescope.
@@ -192,3 +181,33 @@ export KWIN_DRM_USE_EGL_STREAMS=1
 # If the system frequently breaks and requires reinstall, consider btrfs filesystem which supports easier snapshots,
 # or install with LVM for managing ext4 filesystem.
 
+
+
+
+
+
+# ----
+# Nvidia drivers caveats - no longer needed with AMD card
+
+# pacman install nvidia-dkms dkms
+# Enable the kernel options for the Nvidia proprietary drivers.
+# Without these set, Wayland login to Plasma desktop will result in a black screen.
+# nano /etc/default/grub
+# nvidia_drm.modeset=1
+# nvidia-drm.fbdev=1
+# GRUB_CMDLINE_LINUX_DEFAULT="nvidia-drm.modeset=1 nvidia-drm.fbdev=1"
+# grub config must be regenerated after making changes
+# grub-mkconfig -o /boot/grub/grub.cfg
+# Once things are stable, adding `quiet splash` here will give a splash screen during boot instead of log messages.
+# Verify nvidia kernel parameters are set - should return "Y".
+# Reboot will be needed since grub needs to pass in the parameter on boot.
+# cat /sys/module/nvidia_drm/parameters/modeset
+# cat /sys/module/nvidia_drm/parameters/fbdev
+
+# cat /proc/driver/nvidia/params | sort
+# NVreg_PreserveVideoMemoryAllocations=1
+
+# Add this line to KWin config
+# https://blog.davidedmundson.co.uk/blog/running-kwin-wayland-on-nvidia/
+# nano /etc/profile.d/kwin.sh
+# export KWIN_DRM_USE_EGL_STREAMS=1
