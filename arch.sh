@@ -25,33 +25,41 @@ lsblk
 # Start fdisk
 # fdisk /dev/the_disk_to_be_partitioned
 # 2TB SSD
-fdisk /dev/sda
+# WARN: this disk name will vary
+fdisk /dev/sdb
 
 # Create EFI partition
 # new
 n
-# Enter to leave as default partition number 1
+# partition number 1
+# (consider deleting old partition if this starts at 2 and doesn't allow 1 - WARN: deleting partition results in data loss)
 # <Enter>
-# Enter again - default first sector
+# Enter again - default first sector 2048 (slight wasted space but may be needed by GRUB? Need to revisit this, but starting at 2048 is fine)
+#  2048 may cause things to line up better with the partitions, or is it just legacy backwards compatibility with MBR/DOS?
 # <Enter>
 # Desired size. 1000MB
-+1000M
++1G
 # change type
 t
 # EFI partition number (defaults 1)
-1
+# 1
 # Select 1 for EFI System type
 1
+
+# (No Swap partition. Plan to have enough RAM / use swap file on disk)
 
 # Create root Linux file system partition
 # new
 n
-# default partition number 1
+# default partition number 2
 # <Enter>
 # (default first sector)
 # <Enter>
 # (use remaining space)
 # <Enter>
+# It will default to Linux Filesystem,
+# but change it to Linux root for the appropriate architecture, i.e. Linux root (x86-64), to be slightly more correct
+23
 # write
 w
 
@@ -59,13 +67,17 @@ w
 # identify partitions to format
 fdisk -l
 lsblk
+parted -l
 
 # (replace root_partition and efi_system_partition here with actual identifiers)
 mkfs.ext4 /dev/root_partition
+# mkfs.ext4 /dev/sdb2
+# mkswap /dev/swap_partition - no swap partition for this setup
 mkfs.fat -F 32 /dev/efi_system_partition
+# mkfs.fat -F 32 /dev/sdb1
 
-mount /dev/root_partition /mnt
-mount --mkdir /dev/efi_system_partition /mnt/boot
+mount --mkdir /dev/sdb1 /mnt/boot
+mount /dev/sdb2 /mnt
 
 # verify the SSD looks right
 fdisk -l
@@ -89,8 +101,13 @@ pacstrap -K /mnt base linux linux-firmware
 # Step 3
 genfstab -U /mnt >> /mnt/etc/fstab
 
-# list timezones outside chroot to make sure the name is right
+# list timezones outside chroot to double check which name to use below - e.g. America/Chicago
 timedatectl list-timezones
+
+# Bootloader can be installed from outside chroot or not, just be sure efi-directory is right
+# pacstrap -K efibootmgr grub
+# grub-install --target=x86_64-efi --efi-directory=/mnt/boot --bootloader-id=ARCHGRUB --removable
+# grub-mkconfig -o /mnt/boot/grub/grub.cfg
 
 # change root into the new system
 arch-chroot /mnt
@@ -114,14 +131,17 @@ echo "josh-pc" >> /etc/hostname
 # In post installation steps, root user will be disabled after a user with sudo is created
 passwd
 
-# setup boot loader in the ESP (EFI System Partition)
-# be sure to do this after chroot, so the commands are run inside the new system
-# this step writes the boot option to the NVRAM of the motherboard and creates /boot/efi/grub
-pacman install efibootmgr grub
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+# setup boot loader in the ESP (EFI System Partition).
+# doinng this after chroot, so the commands are run inside the new system.
+# These steps write the boot option to the NVRAM of the motherboard normally, but not with --removable for MSI motherboard.
+pacman -S efibootmgr grub
+# --removable needed for MSI motherboard!
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=ARCHGRUB --removable
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# NOTE: old "ubuntu" boot entry for Linux Mint should be removed at some point using efibootmgr
+
+
+# Personal note: old "ubuntu" boot entry for Linux Mint on 1TB SSD should be removed at some point using efibootmgr, or totally reformat Windows drive
 # https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#efibootmgr
 
 # exit chroot jail
@@ -132,12 +152,14 @@ umount -R /mnt
 # reboot and login as root
 reboot
 
+# (select reboot to firmware interface and remove USB installation medium, no longer need to boot from USB if everything worked)
+
 # install more packages
 # general
-pacman install man-db man-pages texinfo which less wget htop nano
+pacman -S man-db man-pages texinfo which less wget htop nano
 
 # file system packages
-pacman install fsck e2fsprogs
+pacman -S fsck e2fsprogs
 
 # kernel audio drivers should be fine.
 # TODO: check which devices are supported.
@@ -147,14 +169,43 @@ pacman install fsck e2fsprogs
 # May want pipewire ?
 
 # Intel
-pacman install intel-ucode
+pacman -S intel-ucode
+
+# verify microcode was installed
+# https://wiki.archlinux.org/title/Microcode#Microcode_initramfs_packed_together_with_the_main_initramfs_in_one_file
+# You can verify the initramfs includes the microcode update files with lsinitcpio. E.g.:
+# lsinitcpio --early /boot/initramfs-linux.img | grep microcode
+# kernel/x86/microcode/
+# /kernel/x86/microcode/GenuineIntel.bin
+# then verify early load after next boot:
+# journalctl -k --grep='microcode:'
 
 # AMD
 # amdgpu driver comes with Linux kernel, and should load automatically on boot.
 # vulkan-radeon is part of mesa, installing separately is not necessary
 # https://github.com/archlinux/archinstall/blob/6c7260fa336909c7a9775dcf2f3cb78027e7af3c/archinstall/lib/hardware.py#L102-L109
-pacman install mesa
+pacman -S mesa
 # If having trouble with Wayland, install packages needed for xorg: xf86-video-amdgpu, xf86-video-ati ?
+
+
+# nano /etc/default/grub
+# change colors / theme: https://www.gnu.org/software/grub/manual/grub/html_node/color_005fnormal.html
+# then regenerate with grub-mkconfig as normal
+
+# TODO
+pacman -S zsh
+# Before using `-s /usr/bin/zsh`, check that zsh is in `/etc/shells` / `chsh -l`,
+# and run `which zsh` to verify path.
+useradd --groups adm,sys,log,rfkill,uucp,wheel,http,games -shell /usr/bin/zsh --create-home josh
+passwd josh
+# <set password>
+
+# https://wiki.archlinux.org/title/Sudo#Configuration
+EDITOR=nano visudo
+nano /etc/sudoers
+# %wheel    ALL=(ALL) ALL
+
+
 
 
 # Plasma desktop ( withKWin Wayland compositor).
@@ -162,10 +213,10 @@ pacman install mesa
 # https://github.com/archlinux/archinstall/blob/master/archinstall/default_profiles/desktops/plasma.py
 # https://wiki.archlinux.org/title/KDE#Installation
 # see kde-applications-meta for other basic desktop programs
-pacman install plasma-meta kde-utilities-meta kde-system-meta
+pacman -S plasma-meta kde-utilities-meta kde-system-meta
 
 # gaming applications
-pacman install steam gamescope lutris discord
+pacman -S steam gamescope lutris discord
 
 # Installing and running Discord as a flatpak may improve performance.
 # https://wiki.archlinux.org/title/Discord
@@ -184,9 +235,7 @@ pacman install steam gamescope lutris discord
 
 
 
-
-
-# ----
+# ----------------------
 # Nvidia drivers caveats - no longer needed with AMD card
 
 # pacman install nvidia-dkms dkms
