@@ -76,8 +76,8 @@ mkfs.ext4 /dev/root_partition
 mkfs.fat -F 32 /dev/efi_system_partition
 # mkfs.fat -F 32 /dev/sdb1
 
-mount --mkdir /dev/sdb1 /mnt/boot
 mount /dev/sdb2 /mnt
+mount --mkdir /dev/sdb1 /mnt/boot
 
 # verify the SSD looks right
 fdisk -l
@@ -133,12 +133,12 @@ passwd
 
 # setup boot loader in the ESP (EFI System Partition).
 # doinng this after chroot, so the commands are run inside the new system.
-# These steps write the boot option to the NVRAM of the motherboard normally, but not with --removable for MSI motherboard.
+# These steps write the boot option to the NVRAM of the motherboard normally,
+# but not with --removable, needed for MSI motherboard which otherwise doesn't see grub.
 pacman -S efibootmgr grub
 # --removable needed for MSI motherboard!
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=ARCHGRUB --removable
 grub-mkconfig -o /boot/grub/grub.cfg
-
 
 
 # Personal note: old "ubuntu" boot entry for Linux Mint on 1TB SSD should be removed at some point using efibootmgr, or totally reformat Windows drive
@@ -149,10 +149,17 @@ exit
 # manually unmount in case there are busy partitions
 umount -R /mnt
 
-# reboot and login as root
-reboot
+# Side note, accidentally started using systemd-networkd then removed:
+# rm /etc/systemd/network/20-wired.network
+# systemctl disable systemd-networkd
+# systemctl stop systemd-networkd
+# systemctl stop systemd-networkd.socket
 
-# (select reboot to firmware interface and remove USB installation medium, no longer need to boot from USB if everything worked)
+ip link
+ip address show
+networkctl list
+# manually bring up ethernet interface if DOWN / off
+ip link set enp4s0 up
 
 # install more packages
 # general
@@ -180,60 +187,101 @@ pacman -S intel-ucode
 # then verify early load after next boot:
 # journalctl -k --grep='microcode:'
 
-# AMD
+# AMD GPU
 # amdgpu driver comes with Linux kernel, and should load automatically on boot.
 # vulkan-radeon is part of mesa, installing separately is not necessary
 # https://github.com/archlinux/archinstall/blob/6c7260fa336909c7a9775dcf2f3cb78027e7af3c/archinstall/lib/hardware.py#L102-L109
 pacman -S mesa
 # If having trouble with Wayland, install packages needed for xorg: xf86-video-amdgpu, xf86-video-ati ?
-
+# how to verify amdgpu module is loaded?
 
 # nano /etc/default/grub
 # change colors / theme: https://www.gnu.org/software/grub/manual/grub/html_node/color_005fnormal.html
 # then regenerate with grub-mkconfig as normal
 
-# TODO
-pacman -S zsh
-# Before using `-s /usr/bin/zsh`, check that zsh is in `/etc/shells` / `chsh -l`,
-# and run `which zsh` to verify path.
-useradd --groups adm,sys,log,rfkill,uucp,wheel,http,games -shell /usr/bin/zsh --create-home josh
+# setup your own user (it's a bad practice to login as root all the time)
+useradd --groups adm,sys,log,rfkill,uucp,wheel,http,games --create-home josh
 passwd josh
 # <set password>
 
+pacman -S sudo
 # https://wiki.archlinux.org/title/Sudo#Configuration
 EDITOR=nano visudo
 nano /etc/sudoers
 # %wheel    ALL=(ALL) ALL
 
+# login as personal user rather than root - consider disabling root once your user can use sudo
 
-
-
-# Plasma desktop ( withKWin Wayland compositor).
+# Plasma desktop (with KWin Wayland compositor).
 # Packages in this group / dependency tree include i.e. network manager for managing networks via desktop as well.
 # https://github.com/archlinux/archinstall/blob/master/archinstall/default_profiles/desktops/plasma.py
 # https://wiki.archlinux.org/title/KDE#Installation
 # see kde-applications-meta for other basic desktop programs
-pacman -S plasma-meta kde-utilities-meta kde-system-meta
-
-# gaming applications
-pacman -S steam gamescope lutris discord
+# plasma-meta depends on networkmanager - that will be used, not systemd-networkd or another network/dhcp manager
+pacman -Syu plasma-meta kde-utilities-meta kde-system-meta flatpak
+# 2 providers available for qt6-multimedia-backend: 1 qt6-multimedia-ffmpeg / 2 qt6-multimedia-gstreamer = 1
+# provider for jack: 1 jack2 OR 2 pipewire-jack = 2
+# provider for ttf-font: 1 gnu-free-fonts OR 2 noto-fonts = 2
+# provider for phonon-qt6-backend: 1 phonon-qt6-mpv OR 2 phonon-qt6-vlc = 2
+# provider for tessdata: English https://archlinux.org/packages/extra/any/tesseract-data-eng/
+# provider for cron: cronie
 
 # Installing and running Discord as a flatpak may improve performance.
 # https://wiki.archlinux.org/title/Discord
 # pacman install flatpak
 # flatpak install discord
 
+reboot
+
+# enable desktop and network manager
+# https://wiki.archlinux.org/title/SDDM
+# https://wiki.archlinux.org/title/NetworkManager
+sudo systemctl enable NetworkManager
+sudo systemctl start NetworkManager
+
+# See that Ethernet is connected
+nmcli device
+
+# WARN: once you do this, you will lose the terminal because the desktop greeter / login page will get displayed
+sudo systemctl enable sddm
+sudo systemctl start sddm
 
 
-# Select "Plasma (wayland)" from your login manager.
+# gaming applications
+pacman -Syu gamescope lutris discord
+
+# enable multilib and install steam
+pacman -Syu steam
+
+# Select "Plasma (wayland)" from login manager if it is not selected.
 # Wayland is needed for gamescope.
-# Trying to mirror SteamOS' setup as much as possible while maintaining a standalone OS/desktop.
 
 # If the system frequently breaks and requires reinstall, consider btrfs filesystem which supports easier snapshots,
 # or install with LVM for managing ext4 filesystem.
 
 
+# https://community.kde.org/Distributions/Packaging_Recommendations#Systemd_configuration
+# https://community.kde.org/Distributions/Packaging_Recommendations#Kernel_configuration
+# https://community.kde.org/Distributions/Packaging_Recommendations#KWin_package_configuration
 
+# pacman -Syu zsh git
+# Before changing shells, check that zsh is in `/etc/shells` / `chsh -l`
+# chsh /usr/bin/zsh
+
+
+# if troubleshooting is needed, use install media again and remount, re-chroot
+# this will give a recovery terminal
+mount /dev/sdb2 /mnt
+mount /dev/sdb1 /mnt/boot
+arch-chroot /mnt
+
+# (For real security, encrypt your drive, otherwise anyone with a thumb drive can login as root)
+
+
+# reboot / shutdown as needed
+# Will need to reboot after exiting chroot etc in order to access actual installed system
+reboot
+shutdown --poweroff now
 
 # ----------------------
 # Nvidia drivers caveats - no longer needed with AMD card
