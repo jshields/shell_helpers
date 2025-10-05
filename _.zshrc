@@ -15,5 +15,8 @@ setopt PROMPT_SUBST
 PROMPT='%F{yellow}%~%f%F{215}${vcs_info_msg_0_}%f🥭%F{yellow}〉%f'
 
 
-# Homebrew
-eval "$(/usr/local/bin/brew shellenv)"
+# Homebrew for MacOS
+# eval "$(/usr/local/bin/brew shellenv)"
+
+# Rust
+. "$HOME/.cargo/env"
