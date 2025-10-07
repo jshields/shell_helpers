@@ -14,9 +14,13 @@ setopt PROMPT_SUBST
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 PROMPT='%F{yellow}%~%f%F{215}${vcs_info_msg_0_}%f🥭%F{yellow}〉%f'
 
+# fix raw bytes in arch git diff
+export LESSCHARSET=UTF-8
 
 # zsh native key bindings
+# Ctrl + 🡄
 bindkey "^[[1;5D" backward-word
+# Ctrl + 🡆
 bindkey "^[[1;5C" forward-word
 
 
