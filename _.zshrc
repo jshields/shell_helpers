@@ -15,6 +15,11 @@ setopt PROMPT_SUBST
 PROMPT='%F{yellow}%~%f%F{215}${vcs_info_msg_0_}%f🥭%F{yellow}〉%f'
 
 
+# zsh native key bindings
+bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
+
+
 # Homebrew for MacOS
 # eval "$(/usr/local/bin/brew shellenv)"
 
