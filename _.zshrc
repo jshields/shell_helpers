@@ -29,3 +29,6 @@ bindkey "^[[1;5C" forward-word
 
 # Rust
 . "$HOME/.cargo/env"
+
+# MacOS boilerplate
+. "$HOME/.local/bin/env"

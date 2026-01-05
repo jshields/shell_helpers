@@ -29,6 +29,9 @@ alias 'git-show-files'='git show --pretty="" --name-status'
 # rebase:
 # git fetch origin
 # git rebase -i origin/dev
+# Set upstream by default, creating a remote branch when pushing for the first time,
+# i.e.: git push --set-upstream origin task/...
+# git config push.autoSetupRemote true
 
 alias 'gh-myprs'='gh pr list --author "@me"'
 
