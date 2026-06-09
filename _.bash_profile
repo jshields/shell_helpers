@@ -4,3 +4,5 @@ source ~/.bashrc
 export PATH=/Applications/SnowSQL.app/Contents/MacOS:$PATH
 
 . "$HOME/.local/bin/env"
+
+complete -C /usr/local/bin/terraform terraform

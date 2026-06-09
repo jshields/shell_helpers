@@ -12,7 +12,7 @@ alias xpaste='xclip -selection clipboard -o'
 alias reader='xpaste | espeak'
 alias commandlist='compgen -A function -abck'
 
-alias tf='terraform'
+# alias tf='terraform'
 
 alias 'count-dirs-here'='ls -l . | grep -c ^d'
 alias 'count-files-here'='ls -al | grep ^[-] | wc -l'
